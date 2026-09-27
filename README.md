@@ -2,7 +2,59 @@
 
 Community environmental action platform: report civic issues, confirm nearby reports, track resolutions, participate in initiatives, and measure community impact.
 
-This repository currently contains a folder scaffold only. Applications, dependencies, build configuration, and deployment pipelines will be added as each phase is implemented.
+Phases 1 and 2 are implemented: a pnpm workspace with shared tooling and CI, plus a React shell and working Issues UI. The Issues package is imported directly by the shell; Module Federation is the next phase. Community, Analytics, and NestJS services remain placeholders.
+
+## Getting started
+
+Use Node.js 24 (the reproducible development/CI version is recorded in `.nvmrc`) and pnpm 10.34.5. With a Node version manager, install and select the version in `.nvmrc`; on nvm-windows, pass that version explicitly to `nvm install` and `nvm use`.
+
+```sh
+npm install --global pnpm@10.34.5
+pnpm install --frozen-lockfile
+pnpm check
+pnpm dev
+```
+
+If you prefer not to install pnpm globally, use `npm exec --yes --package=pnpm@10.34.5 -- pnpm <command>` instead. Run all commands from the repository root.
+
+Open **http://127.0.0.1:5173** after starting the development server. No environment file, database, credentials, or Docker services are needed. `.env.example` documents future conventions; it is not automatically loaded.
+
+## Try the reporting flow
+
+1. Browse the six fictional community reports and combine search, category, priority, and status filters.
+2. Select **Report an issue**, enter a title, public location, category, priority, and description, then submit.
+3. See the success message and report timeline, return to the feed, and search for your report.
+4. Refresh the page: reports persist in local storage for this browser and origin.
+
+This is a browser-only demo. Reports are not shared between users or sent to an authority. Confirmations and historical status updates are synthetic. Photos, map selection, authentication, and status changes will arrive in later phases. The only external UI resource is Google Fonts, with system-font fallbacks.
+
+To reset the demo, remove only the `ecocivic.demo.issues.v1` local-storage entry in browser developer tools and reload. That removes locally created reports and reseeds the six examples. To inspect error recovery, temporarily set that entry to invalid JSON and reload; restore or remove it before selecting **Try again**.
+
+For a production-build preview: `pnpm build`, then `pnpm --filter @ecocivic/shell preview`. Static hosting must rewrite application routes such as `/issues/new` to `index.html`.
+
+## Workspace commands
+
+| Command             | Behavior                                                                |
+| ------------------- | ----------------------------------------------------------------------- |
+| `pnpm dev`          | Starts the shell and integrated Issues UI on port 5173.                 |
+| `pnpm build`        | Builds shared packages and the production shell, including Issues.      |
+| `pnpm lint`         | Checks JavaScript and TypeScript with ESLint; warnings fail the check.  |
+| `pnpm lint:fix`     | Applies available ESLint fixes.                                         |
+| `pnpm typecheck`    | Checks the shell, Issues, and shared packages without emitting output.  |
+| `pnpm test`         | Runs Vitest and React Testing Library reporting-flow and storage tests. |
+| `pnpm format`       | Formats supported source, configuration, and documentation files.       |
+| `pnpm format:check` | Checks formatting without writing files.                                |
+| `pnpm check`        | Runs formatting, lint, type checks, available tests, and builds.        |
+
+Recursive commands skip packages without the requested script. Add scripts to the remaining applications and services as they are implemented. Issues currently exports source code for the shell's Vite build; it is not yet an independently deployed remote.
+
+To target a package, use `pnpm --filter @ecocivic/types build`. Declare internal dependencies with `workspace:*` when introducing package consumers. pnpm then builds declared dependencies before their dependents.
+
+Commit `pnpm-lock.yaml` with dependency changes. CI uses a frozen install and runs the same checks for pull requests and pushes to `main`. The workflow has not run on GitHub until this repository is pushed there.
+
+See [the full build plan](.agent.md) and [the workspace decision](docs/adr/0001-workspace-foundation.md).
+
+See also [the frontend architecture decision](docs/adr/0002-integrated-issues-ui.md) and [Phase 2 interview notes](docs/interview-prep/phase-2-react.md).
 
 ## Repository layout
 
@@ -52,4 +104,4 @@ EcoCivic/
 8. Observability, performance, caching, and resilience.
 9. Kafka events, impact analytics, and responsibly evaluated GenAI features.
 
-Empty directories contain `.gitkeep` placeholders so Git can preserve the structure. No install or run commands are available yet.
+Empty directories contain `.gitkeep` placeholders so Git can preserve the structure.

@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - services/*
+  - packages/*
+
+strictPeerDependencies: true
+
+onlyBuiltDependencies:
+  - esbuild

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+coverage/
+pnpm-lock.yaml
+.pnpm-store/
+.terraform/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
